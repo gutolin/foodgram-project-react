@@ -26,10 +26,16 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='recipes/')
-    description = models.TextField()
-    ingredients = models.ManyToManyField(Ingredient, through='IngredientAmount')
+    text = models.TextField()
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientAmount'
+        )
     tags = models.ManyToManyField(Tag)
-    time = models.PositiveIntegerField()
+    cooking_time = models.PositiveIntegerField()
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Follow(models.Model):
@@ -57,7 +63,7 @@ class Follow(models.Model):
 
 
 class IngredientAmount(models.Model):
-    ingredient = models.ForeignKey(
+    name = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингридиент',
@@ -68,3 +74,26 @@ class IngredientAmount(models.Model):
         verbose_name='Рецепт',
     )
     amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.ingredient} for {self.recipe}'
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='cart',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='cart',
+        verbose_name='Рецепт',
+    )
+
+    class Meta:
+        verbose_name = 'Корзина'
+        UniqueConstraint(fields=['user', 'recipe'],
+                         name='unique_cart')

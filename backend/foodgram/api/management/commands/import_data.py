@@ -8,7 +8,11 @@ class Command(BaseCommand):
     help = 'import ingredient'
 
     def handle(self, *args, **options):
-        with open('data/ingredients.json', 'r', encoding='utf-8') as file:
+        with open(
+                'backend/foodgram/data/ingredients.json',
+                'r',
+                encoding='utf-8'
+                ) as file:
             data = json.load(file)
             for element in data:
                 models = Ingredient(
