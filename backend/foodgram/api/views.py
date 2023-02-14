@@ -1,11 +1,8 @@
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, viewsets
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
 from api.models import Recipe, Ingredient, IngredientAmount, Tag, Follow
 
 from .serializers import (TagSerializers,
@@ -21,6 +18,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializers
     pagination_class = PageNumberPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
