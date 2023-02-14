@@ -25,7 +25,7 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='recipes/')
+    image = models.ImageField(upload_to='recipes/', null=True)
     text = models.TextField()
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -76,7 +76,7 @@ class IngredientAmount(models.Model):
     amount = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.ingredient} for {self.recipe}'
+        return f'{self.name} for {self.recipe}'
 
 
 class Cart(models.Model):

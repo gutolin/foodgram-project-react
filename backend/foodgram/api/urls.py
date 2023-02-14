@@ -15,5 +15,4 @@ urlpatterns = [
     path('', include(routers_v1.urls)),
     path('admin/', admin.site.urls),
     # path('auth/signup/', signup, name="signup"),
-    # path('auth/token/', token, name='auth_token')
 ]

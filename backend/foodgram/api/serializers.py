@@ -1,9 +1,7 @@
-from django.contrib.auth import get_user_model
 from api.models import Recipe, Ingredient, IngredientAmount, Tag, Follow
 from rest_framework import serializers
 
-User = get_user_model()
-
+from user.serializers import UserSerializer
 
 class TagSerializers(serializers.ModelSerializer):
 
@@ -21,33 +19,27 @@ class IngredientSerializers(serializers.ModelSerializer):
 
 class IngredientAmountSerializers(serializers.ModelSerializer):
 
-    id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.ReadOnlyField(source='ingredient.name')
+    id = serializers.ReadOnlyField(source='name.id')
+    name = serializers.ReadOnlyField(source='name.name')
     measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
+        source='name.measurement_unit'
     )
 
     class Meta:
         model = IngredientAmount
-        fields = ('id', 'name', 'measurement_unit')
-
-
-class CustomUserSerializers(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['email',
-                  'id',
-                  'username',
-                  'first_name',
-                  'last_name',
-                  ]
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
-    ingredients = IngredientAmountSerializers(read_only=True, many=True)
-    author = CustomUserSerializers(read_only=True, many=False)
+    ingredients = IngredientAmountSerializers(
+        source='ingredientamount_set',
+        many=True,
+        read_only=True,
+    )
+    author = UserSerializer(read_only=True, many=False)
+    is_favorited = True
+    is_in_shopping_cart = True
 
     class Meta:
         model = Recipe
