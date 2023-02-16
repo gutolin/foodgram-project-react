@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=100, 
+    name = models.CharField(max_length=100,
                             unique=True,
                             verbose_name='Tag')
     color = models.CharField(max_length=7,
@@ -36,7 +36,7 @@ class Recipe(models.Model):
                                related_name='recipes')
     name = models.CharField(max_length=200,
                             verbose_name='Название рецепта')
-    image = models.ImageField(upload_to='recipes/', 
+    image = models.ImageField(upload_to='recipes/',
                               null=True,
                               verbose_name='Изображение')
     text = models.TextField(verbose_name='Описание рецепта')
@@ -78,7 +78,30 @@ class Follow(models.Model):
         UniqueConstraint(fields=['user', 'author'], name='unique_follow')
 
     def __str__(self):
-        return f'{self.user} following {self.following}'
+        return f'{self.user} подписан на {self.author}'
+
+
+class Favorites(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Избранное',
+    )
+
+    class Meta:
+        verbose_name = 'Избранное'
+        UniqueConstraint(fields=['user', 'recipe'], name='unique_favorites')
+
+    def __str__(self):
+        return f'{self.user} добавил в избранное {self.recipe}'
 
 
 class IngredientAmount(models.Model):

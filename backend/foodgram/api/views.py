@@ -60,8 +60,3 @@ class FollowViewSet(CreateRetrieveViewSet):
         serializer.save(
             user=self.request.user,
         )
-
-    @action(detail=True, methods=['post'])
-    def subscribe(self, request, pk):
-        user = request.user
-        author = get_object_or_404(User, pk=pk)

@@ -11,13 +11,11 @@ routers_v1.register(r'tags', TagViewSet, basename='tags')
 routers_v1.register(r'recipes', RecipeViewSet, basename='recipes')
 routers_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
 routers_v1.register(r'users/subscriptions', FollowViewSet,
-                    basename='users/subscriptions')
-routers_v1.register(r'users',
-                    FollowViewSet,
-                    basename='comments')
+                    basename='subscriptions')
+#routers_v1.register(r'users/(?P<id>\d+)/subscribe', FollowViewSet,
+#                    basename='subscribe')
 
 urlpatterns = [
     path('', include(routers_v1.urls)),
     path('admin/', admin.site.urls),
-    # path('auth/signup/', signup, name="signup"),
 ]

@@ -1,4 +1,4 @@
-from api.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
+from api.models import Follow, Ingredient, IngredientAmount, Recipe, Tag, Favorites
 from django.contrib.auth import get_user_model
 from django.db.models import F, QuerySet
 from rest_framework import serializers
@@ -40,7 +40,7 @@ class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     ingredients = SerializerMethodField()
     author = UserSerializer(read_only=True, many=False)
-    is_favorited = True
+    is_favorited = SerializerMethodField()
     is_in_shopping_cart = True
 
     class Meta:
@@ -52,20 +52,21 @@ class RecipeSerializers(serializers.ModelSerializer):
                   'name',
                   'image',
                   'text',
-                  'cooking_time'
+                  'cooking_time',
+                  'is_favorited',
                   ]
 
     def get_ingredients(self, recipe: Recipe):
-        """Получает список ингридиентов для рецепта.
-        Args:
-            recipe (Recipe): Запрошенный рецепт.
-        Returns:
-            QuerySet[dict]: Список ингридиентов в рецепте.
-        """
         ingredients = recipe.ingredients.values(
             'id', 'name', 'measurement_unit', amount=F('ingridient__amount')
         )
         return ingredients
+
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
 
 
 class FollowSerializers(serializers.ModelSerializer):
@@ -80,13 +81,20 @@ class FollowSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+        fields = ('id',
+                  'email',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'is_subscribed',
+                  'recipes',
+                  'recipes_count')
 
     def get_is_subscribed(self, obj):
-        return Follow.objects.filter(
-            user=obj.user, author=obj.author
-        ).exists()
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -94,7 +102,18 @@ class FollowSerializers(serializers.ModelSerializer):
         queryset = Recipe.objects.filter(author=obj.author)
         if limit:
             queryset = queryset[:int(limit)]
-        return RecipeSerializers(queryset, many=True).data
+        return RecipeSubscriberSerializers(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
+
+
+class RecipeSubscriberSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ['id',
+                  'name',
+                  'image',
+                  'cooking_time',
+                  ]
