@@ -1,15 +1,14 @@
-from rest_framework import filters, viewsets
+from api.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.decorators import action
+from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
-from api.models import Recipe, Ingredient, IngredientAmount, Tag, Follow
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
-from .serializers import (TagSerializers,
-                          IngredientSerializers,
-                          RecipeSerializers,
-                          IngredientAmount,
-                          )
+from .serializers import (FollowSerializers, IngredientAmountSerializers,
+                          IngredientSerializers, RecipeSerializers,
+                          TagSerializers)
 
 User = get_user_model()
 
@@ -31,7 +30,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class IngredientAmountViewSet(viewsets.ModelViewSet):
     queryset = IngredientAmount.objects.all()
-    serializer_class = IngredientAmount
+    serializer_class = IngredientAmountSerializers
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -40,3 +39,29 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
     pagination_class = None
+
+
+class CreateRetrieveViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                            mixins.ListModelMixin, viewsets.GenericViewSet):
+
+    pass
+
+
+class FollowViewSet(CreateRetrieveViewSet):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializers
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('following__username',)
+
+    def get_queryset(self):
+        return Follow.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+        )
+
+    @action(detail=True, methods=['post'])
+    def subscribe(self, request, pk):
+        user = request.user
+        author = get_object_or_404(User, pk=pk)
