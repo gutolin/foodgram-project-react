@@ -1,7 +1,9 @@
 from api.models import Recipe, Ingredient, IngredientAmount, Tag, Follow
 from rest_framework import serializers
-
+from django.db.models import F, QuerySet
+from django.shortcuts import get_object_or_404
 from user.serializers import UserSerializer
+from rest_framework.serializers import SerializerMethodField
 
 class TagSerializers(serializers.ModelSerializer):
 
@@ -32,11 +34,7 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
 
 class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
-    ingredients = IngredientAmountSerializers(
-        source='ingredientamount_set',
-        many=True,
-        read_only=True,
-    )
+    ingredients = SerializerMethodField()
     author = UserSerializer(read_only=True, many=False)
     is_favorited = True
     is_in_shopping_cart = True
@@ -52,3 +50,15 @@ class RecipeSerializers(serializers.ModelSerializer):
                   'text',
                   'cooking_time'
                   ]
+
+    def get_ingredients(self, recipe: Recipe):
+        """Получает список ингридиентов для рецепта.
+        Args:
+            recipe (Recipe): Запрошенный рецепт.
+        Returns:
+            QuerySet[dict]: Список ингридиентов в рецепте.
+        """
+        ingredients = recipe.ingredients.values(
+            'id', 'name', 'measurement_unit', amount=F('ingridient__amount')
+        )
+        return ingredients
