@@ -12,8 +12,6 @@ routers_v1.register(r'recipes', RecipeViewSet, basename='recipes')
 routers_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
 routers_v1.register(r'users/subscriptions', FollowViewSet,
                     basename='subscriptions')
-#routers_v1.register(r'users/(?P<id>\d+)/subscribe', FollowViewSet,
-#                    basename='subscribe')
 
 urlpatterns = [
     path('', include(routers_v1.urls)),

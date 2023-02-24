@@ -6,6 +6,9 @@ User = get_user_model()
 
 
 class Tag(models.Model):
+    """Модель тэгов используется для добавления тегов к рецептом
+    с последующей фильтрацией по ним в запросе.
+    Color - цвет тэга в HEX."""
     name = models.CharField(max_length=100,
                             unique=True,
                             verbose_name='Tag')
@@ -20,6 +23,9 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
+    """Можель ингредиентов, пользователь выбирает ингредиенты
+    для рецепта из этой модели.
+    measurement_unit - единица измерения (г/мл/кг...)."""
     name = models.CharField(max_length=100,
                             verbose_name='Ингредиент')
     measurement_unit = models.CharField(max_length=10,
@@ -30,6 +36,11 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
+    """Модель рецептов, основная модель проекта.
+    author - привязка к модели пользователя
+    ingredients - привязка к модели ингредиент
+    tags - привязка к модели тэгов
+    cooking_time - время готовки (в минутах)."""
     author = models.ForeignKey(User,
                                on_delete=models.CASCADE,
                                verbose_name='Автор',
@@ -37,7 +48,6 @@ class Recipe(models.Model):
     name = models.CharField(max_length=200,
                             verbose_name='Название рецепта')
     image = models.ImageField(upload_to='recipes/',
-                              null=True,
                               verbose_name='Изображение')
     text = models.TextField(verbose_name='Описание рецепта')
     ingredients = models.ManyToManyField(
@@ -58,7 +68,7 @@ class Recipe(models.Model):
 
 
 class Follow(models.Model):
-
+    """Модель подписок. Создает уникальную запись в бд пользователь-автор."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -82,7 +92,8 @@ class Follow(models.Model):
 
 
 class Favorites(models.Model):
-
+    """Модель избранного. Создает уникальную запись в
+    бд пользователь-рецепт."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -105,6 +116,10 @@ class Favorites(models.Model):
 
 
 class IngredientAmount(models.Model):
+    """Модель привязки колличеста ингредиентов к рецепту
+    name - привязка к ингредиентам
+    recipe - привязка к рецепту
+    amount - количество ингредиентов"""
     name = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
@@ -124,6 +139,7 @@ class IngredientAmount(models.Model):
 
 
 class Cart(models.Model):
+    """Модель корзины, создает уникальную запись в бд пользователь-рецепт"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

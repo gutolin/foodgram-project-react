@@ -1,14 +1,12 @@
+from api.models import Follow
+from api.serializers import FollowSerializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
 from user.serializers import UserSerializer
-from api.models import Follow
-from api.serializers import FollowSerializers
 
 User = get_user_model()
 
@@ -16,9 +14,13 @@ User = get_user_model()
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = IsAuthenticated
 
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['post', 'delete'],
+            permission_classes=[IsAuthenticated])
     def subscribe(self, request, pk=None):
+        """Функция обрабатывающая запросы на создание/удаление
+        подписки на автора."""
         user = request.user
         author = get_object_or_404(User, pk=pk)
 
