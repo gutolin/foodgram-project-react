@@ -42,12 +42,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({
                 'errors': 'Вы не можете подписываться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
-        if Follow.objects.filter(user=user, author=author).exists():
-            return Response({
-                'errors': 'Вы уже подписаны на данного пользователя'
-            }, status=status.HTTP_400_BAD_REQUEST)
 
-        follow = Follow.objects.create(user=user, author=author)
+        follow = Follow.objects.get_or_create(user=user, author=author)
         serializer = FollowSerializers(
             follow, context={'request': request}
         )

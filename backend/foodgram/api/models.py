@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 User = get_user_model()
 
@@ -23,11 +24,11 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Можель ингредиентов, пользователь выбирает ингредиенты
+    """Модель ингредиентов, пользователь выбирает ингредиенты
     для рецепта из этой модели.
     measurement_unit - единица измерения (г/мл/кг...)."""
     name = models.CharField(max_length=100,
-                            verbose_name='Ингредиент')
+                            verbose_name='Название ингредиента')
     measurement_unit = models.CharField(max_length=10,
                                         verbose_name='Единица измерения')
 
@@ -60,6 +61,7 @@ class Recipe(models.Model):
                                   verbose_name='Тэги',
                                   related_name='recipes')
     cooking_time = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(1440)],
         verbose_name='Время приготоваления'
         )
 
@@ -117,10 +119,10 @@ class Favorites(models.Model):
 
 class IngredientAmount(models.Model):
     """Модель привязки колличеста ингредиентов к рецепту
-    name - привязка к ингредиентам
+    ingredient - привязка к ингредиентам
     recipe - привязка к рецепту
     amount - количество ингредиентов"""
-    name = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингридиент',
@@ -132,10 +134,12 @@ class IngredientAmount(models.Model):
         verbose_name='Рецепт',
         related_name='recipe'
     )
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10000)]
+    )
 
     def __str__(self):
-        return f'{self.name} for {self.recipe}'
+        return f'{self.ingredient} for {self.recipe}'
 
 
 class Cart(models.Model):

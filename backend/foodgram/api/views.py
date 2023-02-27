@@ -1,7 +1,3 @@
-from api.filters import RecipesFilterSet
-from api.models import (Cart, Favorites, Follow, Ingredient, IngredientAmount,
-                        Recipe, Tag)
-from api.permissions import IsAdminAuthorOrReadOnly
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -16,6 +12,10 @@ from .serializers import (FollowSerializers, IngredientAmountSerializers,
                           IngredientSerializers, RecipeCreateSerializers,
                           RecipeSerializers, RecipeSubscriberSerializers,
                           TagSerializers)
+from api.filters import RecipesFilterSet
+from api.models import (Cart, Favorites, Follow, Ingredient, IngredientAmount,
+                        Recipe, Tag)
+from api.permissions import IsAdminAuthorOrReadOnly
 
 User = get_user_model()
 
@@ -58,7 +58,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = RecipeSubscriberSerializers(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             obj = Favorites.objects.filter(user=user, recipe__id=pk)
             if obj.exists():
                 obj.delete()
@@ -78,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         final_list = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__cart__user=request.user).values_list(
-            'name__name', 'name__measurement_unit',
+            'ingredient__name', 'ingredient__measurement_unit',
             'amount')
         for item in ingredients:
             name = item[0]
@@ -92,11 +92,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         file_text = 'Список покупок:\n'
         for item in final_list:
-            amount = final_list[item]["amount"]
-            measurement_unit = final_list[item]["measurement_unit"]
+            amount = final_list[item]['amount']
+            measurement_unit = final_list[item]['measurement_unit']
             file_text = (f'{file_text}{item}: {amount} {measurement_unit}.\n')
 
-        filename = "shopping_cart.txt"
+        filename = 'shopping_cart.txt'
         response = HttpResponse(file_text, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
             filename)
@@ -120,7 +120,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = RecipeSubscriberSerializers(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             obj = Cart.objects.filter(user=user, recipe__id=pk)
             if obj.exists():
                 obj.delete()
@@ -164,7 +164,8 @@ class FollowViewSet(CreateRetrieveViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
+        current_user = self.request.user
+        return current_user.follower.all()
 
     def perform_create(self, serializer):
         serializer.save(

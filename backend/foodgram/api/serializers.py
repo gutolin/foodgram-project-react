@@ -1,10 +1,12 @@
-from api.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
+
+from api.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
 from user.serializers import UserSerializer
+
 
 User = get_user_model()
 
@@ -26,7 +28,7 @@ class IngredientSerializers(serializers.ModelSerializer):
 class IngredientAmountSerializers(serializers.ModelSerializer):
 
     id = serializers.ReadOnlyField(source='name.id')
-    name = serializers.ReadOnlyField(source='name.name')
+    name = serializers.ReadOnlyField(source='name.ingredient')
     amount = serializers.ReadOnlyField(source='name.amount')
     measurement_unit = serializers.ReadOnlyField(
         source='name.measurement_unit'
@@ -178,7 +180,7 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError({
                 'ingredients': 'Пустое значение ингредиента'})
-        ingredient_list = []
+        ingredient_list = set()
 
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(Ingredient,
@@ -189,7 +191,7 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Ингридиенты должны быть уникальными'
                     )
-            ingredient_list.append(ingredient)
+            ingredient_list.add(ingredient)
 
             if int(ingredient_item['amount']) < 0:
                 raise serializers.ValidationError(
@@ -203,12 +205,15 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
 
     def create_ingredients(self, ingredients, recipe):
         """Создание ингредиента в случае отсутствия нужного в БД."""
+        data = []
         for ingredient in ingredients:
-            IngredientAmount.objects.create(
+            element = IngredientAmount(
                 recipe=recipe,
-                name_id=ingredient['id'],
+                ingredient_id=ingredient['id'],
                 amount=ingredient['amount'],
             )
+            data.append(element)
+        IngredientAmount.objects.bulk_create(data)
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
