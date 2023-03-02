@@ -25,6 +25,9 @@ services:
       - db_value:/var/lib/postgresql/data/
     env_file:
       - ./.env
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
   web:
     image: gutolin/foodgram:latest
     restart: always
