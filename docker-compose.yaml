@@ -26,7 +26,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - POSTGRES_PASSWORD=pass
+      - POSTGRES_PASSWORD=admin
   web:
     image: gutolin/foodgram:latest
     restart: always
