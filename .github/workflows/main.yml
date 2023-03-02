@@ -1,5 +1,5 @@
 
-name: yamdb workflow
+name: foodgram workflow
 
 on: [push]
 

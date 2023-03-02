@@ -28,7 +28,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=pass
   web:
-    image: gutolin/yamdb:latest
+    image: gutolin/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
