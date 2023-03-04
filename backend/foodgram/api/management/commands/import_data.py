@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open(
-                'backend/foodgram/data/ingredients.json',
+                '../data/ingredients.json',
                 'r',
                 encoding='utf-8'
                 ) as file:
