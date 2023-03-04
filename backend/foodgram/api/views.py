@@ -136,6 +136,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializers
     permission_classes = [AllowAny, ]
+    pagination_class = None
 
 
 class IngredientAmountViewSet(viewsets.ModelViewSet):
