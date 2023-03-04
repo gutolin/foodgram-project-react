@@ -16,9 +16,8 @@ routers_v1.register(r'users/subscriptions', FollowViewSet,
                     basename='subscriptions')
 
 urlpatterns = [
-    path('', include(routers_v1.urls)),
-    path('admin/', admin.site.urls),
     path('', include('djoser.urls')),
     path('', include(routers_v1.urls)),
+    path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls.authtoken')),
 ]
