@@ -210,3 +210,11 @@ class UserViewSet(viewsets.ModelViewSet):
             follow, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated],)
+    def me(self, request):
+        current_user = request.user
+        serializer = FollowSerializers(
+            current_user, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
