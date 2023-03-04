@@ -176,7 +176,7 @@ class FollowViewSet(CreateRetrieveViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = IsAuthenticated
+    permission_classes = [IsAuthenticated,]
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
