@@ -157,7 +157,7 @@ class RecipeSubscriberSerializers(serializers.ModelSerializer):
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
-    author = UserSerializer(read_only=True)
+    author = CustomUserSerializer(read_only=True)
     image = Base64ImageField()
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField()
