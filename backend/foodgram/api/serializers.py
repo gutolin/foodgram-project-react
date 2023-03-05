@@ -128,7 +128,7 @@ class FollowSerializers(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj.id).exists()
+        return Follow.objects.filter(user=user, author=obj.author).exists()
 
     def get_recipes(self, obj):
         """Получение рецепта."""
@@ -157,7 +157,7 @@ class RecipeSubscriberSerializers(serializers.ModelSerializer):
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
-    author = UsersSerializer(read_only=True)
+    author = UserSerializer(read_only=True)
     image = Base64ImageField()
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField()
