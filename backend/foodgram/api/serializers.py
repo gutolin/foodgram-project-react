@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 
 from recipe.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
-
+from api.serializers import UsersSerializer
 
 User = get_user_model()
 
@@ -43,7 +43,7 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
 class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     ingredients = SerializerMethodField()
-    author = UserSerializer(read_only=True, many=False)
+    author = UsersSerializer(read_only=True, many=False)
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
@@ -257,7 +257,7 @@ class UserCreateSerializer(UserCreateSerializer):
         }
 
 
-class UserSerializer(UserSerializer):
+class UsersSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
