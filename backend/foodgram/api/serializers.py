@@ -102,6 +102,17 @@ class RecipeSerializers(serializers.ModelSerializer):
         return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
 
 
+class RecipeSubscriberSerializers(serializers.ModelSerializer):
+    """Краткая версия сериализатора рецепта."""
+    class Meta:
+        model = Recipe
+        fields = ['id',
+                  'name',
+                  'image',
+                  'cooking_time',
+                  ]
+
+
 class FollowSerializers(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')
@@ -109,8 +120,8 @@ class FollowSerializers(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes = RecipeSubscriberSerializers(many=True, read_only=True)
+    recipes_count = SerializerMethodField()
 
     class Meta:
         model = Follow
@@ -126,29 +137,17 @@ class FollowSerializers(serializers.ModelSerializer):
     def get_is_subscribed(*args):
         return True
 
-    def get_recipes(self, obj):
-        """Получение рецепта."""
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[:int(limit)]
-        return RecipeSubscriberSerializers(queryset, many=True).data
+    # def get_recipes(self, obj):
+    #     """Получение рецепта."""
+    #     request = self.context.get('request')
+    #     limit = request.GET.get('recipes_limit')
+    #     queryset = Recipe.objects.filter(author=obj.author)
+    #     if limit:
+    #         queryset = queryset[:int(limit)]
+    #     return RecipeSubscriberSerializers(queryset, many=True).data
 
-    def get_recipes_count(self, obj):
-        """Получение колличества рецептов."""
-        return Recipe.objects.filter(author=obj.author).count()
-
-
-class RecipeSubscriberSerializers(serializers.ModelSerializer):
-    """Краткая версия сериализатора рецепта."""
-    class Meta:
-        model = Recipe
-        fields = ['id',
-                  'name',
-                  'image',
-                  'cooking_time',
-                  ]
+    def get_recipes_count(self, obj: User) -> int:
+        return obj.recipes.count()
 
 
 class RecipeCreateSerializers(serializers.ModelSerializer):

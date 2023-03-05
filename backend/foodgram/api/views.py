@@ -212,7 +212,7 @@ class CustomUserViewSet(UserViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         follow = Follow.objects.get_or_create(user=user, author=author)
-        serializer = RecipeSubscriberSerializers(
+        serializer = FollowSerializers(
             follow, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
