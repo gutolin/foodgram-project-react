@@ -55,7 +55,7 @@ class UsersSerializer(UserSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj.id).exists()
+        return Follow.objects.filter(user=user, author=obj.author).exists()
 
 
 class RecipeSerializers(serializers.ModelSerializer):
