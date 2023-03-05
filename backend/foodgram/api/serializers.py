@@ -131,14 +131,14 @@ class FollowSerializers(serializers.ModelSerializer):
         """Получение рецепта."""
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj[0].author)
+        queryset = Recipe.objects.filter(author=obj[0])
         if limit:
             queryset = queryset[:int(limit)]
         return RecipeSubscriberSerializers(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         """Получение колличества рецептов."""
-        return obj[0].recipes.count()
+        return Recipe.objects.filter(author=obj[0]).count()
 
 
 class RecipeSubscriberSerializers(serializers.ModelSerializer):
