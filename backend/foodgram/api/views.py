@@ -184,7 +184,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     permission_classes = [AllowAny, ]
 
-    @action(detail=True,
+    @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, id):
         """Функция обрабатывающая запросы на создание/удаление
