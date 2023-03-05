@@ -211,10 +211,8 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы не можете подписываться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # follow = Follow.objects.get_or_create(user=user, author=author)
-        serializer = FollowSerializers(
-            author, context={'request': request}
-        )
+        author = get_object_or_404(self.queryset, pk=pk)
+        serializer = FollowSerializers(author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['get'],
