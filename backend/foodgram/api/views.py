@@ -192,6 +192,14 @@ class CustomUserViewSet(UserViewSet):
         user = request.user
         author = get_object_or_404(User, pk=id)
 
+        queryset = Follow.objects.filter(user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = FollowSerializers(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+
         if request.method == 'DELETE':
             if user == author:
                 return Response({
@@ -211,9 +219,12 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы не можете подписываться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        follow = Follow.objects.get_or_create(user=user, author=author)
+        queryset = Follow.objects.get_or_create(user=user, author=author)
+        pages = self.paginate_queryset(queryset)
         serializer = FollowSerializers(
-            follow, context={'request': request}
+            pages,
+            many=True,
+            context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
