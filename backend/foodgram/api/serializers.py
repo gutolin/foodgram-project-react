@@ -128,6 +128,7 @@ class FollowSerializers(serializers.ModelSerializer):
         return True
 
     def get_recipes(self, obj):
+        print(obj)
         request = self.context.get('request')
         recipes_limit = request.query_params.get('recipes_limit')
         if not recipes_limit:
