@@ -132,7 +132,7 @@ class FollowSerializers(serializers.ModelSerializer):
         recipes_limit = request.query_params.get('recipes_limit')
         if not recipes_limit:
             return RecipeSubscriberSerializers(
-                Recipe.objects.filter(author=obj.id),
+                Recipe.objects.filter(author=obj.author),
                 many=True,
                 context={'request': request}
             ).data
