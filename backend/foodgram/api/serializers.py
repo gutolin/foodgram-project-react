@@ -123,23 +123,24 @@ class FollowSerializers(serializers.ModelSerializer):
                   'recipes',
                   'recipes_count']
 
-    def get_is_subscribed(self, obj):
+    def get_is_subscribed(*args):
         """Получение статуса подписки на автора."""
-        request = self.context.get('request')
-        user = request.user
-        if not request or user.is_anonymous:
-            return False
-        subcribe = user.follower.filter(author=obj)
-        return subcribe.exists()
+        return True
 
     def get_recipes(self, obj):
-        """Получение рецепта."""
         request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[:int(limit)]
-        return RecipeSubscriberSerializers(queryset, many=True).data
+        recipes_limit = request.query_params.get('recipes_limit')
+        if not recipes_limit:
+            return RecipeSubscriberSerializers(
+                Recipe.objects.filter(author=obj),
+                many=True,
+                context={'request': request}
+            ).data
+        return RecipeSubscriberSerializers(
+            Recipe.objects.filter(author=obj)[:int(recipes_limit)],
+            many=True,
+            context={'request': request}
+        ).data
 
     def get_recipes_count(self, obj):
         """Получение колличества рецептов."""
