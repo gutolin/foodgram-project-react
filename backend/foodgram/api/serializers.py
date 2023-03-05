@@ -138,7 +138,7 @@ class FollowSerializers(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         """Получение колличества рецептов."""
-        return Recipe.objects.filter(author=obj[0]1).count()
+        return Recipe.objects.filter(author=obj[0]).count()
 
 
 class RecipeSubscriberSerializers(serializers.ModelSerializer):
