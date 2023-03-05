@@ -135,7 +135,7 @@ class FollowSerializers(serializers.ModelSerializer):
         print(obj[0])
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
+        queryset = Recipe.objects.filter(author=obj[0].author)
         if limit:
             queryset = queryset[:int(limit)]
         return RecipeSubscriberSerializers(queryset, many=True).data
