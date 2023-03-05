@@ -186,11 +186,11 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         """Функция обрабатывающая запросы на создание/удаление
         подписки на автора."""
         user = request.user
-        author = get_object_or_404(User, pk=pk)
+        author = get_object_or_404(User, pk=id)
 
         if request.method == 'DELETE':
             if user == author:
