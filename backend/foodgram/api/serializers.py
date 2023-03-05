@@ -123,12 +123,8 @@ class FollowSerializers(serializers.ModelSerializer):
                   'recipes',
                   'recipes_count']
 
-    def get_is_subscribed(self, obj):
-        """Получение статуса подписки на автора."""
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+    def get_is_subscribed(*args):
+        return True
 
     def get_recipes(self, obj):
         """Получение рецепта."""
