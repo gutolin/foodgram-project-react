@@ -213,7 +213,7 @@ class CustomUserViewSet(UserViewSet):
 
         follow = Follow.objects.get_or_create(user=user, author=author)
         serializer = FollowSerializers(
-            author, context={'request': request}
+            follow, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
