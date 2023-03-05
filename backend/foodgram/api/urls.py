@@ -8,12 +8,12 @@ from api.views import (FollowViewSet, IngredientViewSet, RecipeViewSet,
 app_name = 'api'
 
 routers_v1 = DefaultRouter()
+routers_v1.register(r'users/subscriptions', FollowViewSet,
+                    basename='subscriptions')
 routers_v1.register(r'users', UserViewSet, basename='users')
 routers_v1.register(r'tags', TagViewSet, basename='tags')
 routers_v1.register(r'recipes', RecipeViewSet, basename='recipes')
 routers_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
-routers_v1.register(r'users/subscriptions', FollowViewSet,
-                    basename='subscriptions')
 
 urlpatterns = [
     path('', include('djoser.urls')),
