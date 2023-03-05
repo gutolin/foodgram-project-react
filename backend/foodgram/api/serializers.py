@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 
@@ -43,6 +44,7 @@ class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     ingredients = SerializerMethodField()
     author = UserSerializer(read_only=True, many=False)
+    image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
 
@@ -138,6 +140,7 @@ class RecipeSubscriberSerializers(serializers.ModelSerializer):
 class RecipeCreateSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     author = UserSerializer(read_only=True)
+    image = Base64ImageField()
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
