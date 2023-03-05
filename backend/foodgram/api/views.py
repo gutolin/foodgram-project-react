@@ -12,7 +12,7 @@ from .serializers import (FollowSerializers, IngredientAmountSerializers,
                           IngredientSerializers, RecipeCreateSerializers,
                           RecipeSerializers, RecipeSubscriberSerializers,
                           TagSerializers, UserSerializer)
-from api.filters import RecipesFilterSet
+from api.filters import RecipesFilterSet, IngredientSearchFilter
 from api.permissions import IsAdminAuthorOrReadOnly
 from recipe.models import (Cart, Favorites, Follow, Ingredient,
                            IngredientAmount, Recipe, Tag)
@@ -149,7 +149,7 @@ class IngredientAmountViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializers
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
     pagination_class = None
     permission_classes = [AllowAny, ]
