@@ -128,7 +128,7 @@ class FollowSerializers(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
     def get_recipes(self, obj):
         """Получение рецепта."""
