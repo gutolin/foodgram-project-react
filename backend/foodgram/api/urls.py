@@ -2,14 +2,12 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from api.views import (FollowViewSet, IngredientViewSet, RecipeViewSet,
+from api.views import (IngredientViewSet, RecipeViewSet,
                        TagViewSet, UserViewSet)
 
 app_name = 'api'
 
 routers_v1 = DefaultRouter()
-routers_v1.register(r'users/subscriptions', FollowViewSet,
-                    basename='subscriptions')
 routers_v1.register(r'users', UserViewSet, basename='users')
 routers_v1.register(r'tags', TagViewSet, basename='tags')
 routers_v1.register(r'recipes', RecipeViewSet, basename='recipes')
