@@ -61,7 +61,7 @@ class CustomUserSerializer(UserSerializer):
 class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     ingredients = SerializerMethodField()
-    author = UsersSerializer(read_only=True, many=False)
+    author = CustomUserSerializer(read_only=True, many=False)
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
