@@ -7,7 +7,6 @@ from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 
 from recipe.models import Follow, Ingredient, IngredientAmount, Recipe, Tag
-from api.serializers import UsersSerializer
 
 User = get_user_model()
 
@@ -38,6 +37,25 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ['id', 'name', 'measurement_unit', 'amount']
+
+
+class UsersSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id',
+                  'first_name',
+                  'last_name',
+                  'username',
+                  'email',
+                  'is_subscribed']
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
 class RecipeSerializers(serializers.ModelSerializer):
@@ -255,25 +273,6 @@ class UserCreateSerializer(UserCreateSerializer):
             'first_name': {'required': True},
             'last_name': {'required': True},
         }
-
-
-class UsersSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ['id',
-                  'first_name',
-                  'last_name',
-                  'username',
-                  'email',
-                  'is_subscribed']
-
-    def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
 class SignupSerializer(serializers.Serializer):
