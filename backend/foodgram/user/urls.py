@@ -9,6 +9,6 @@ routers_v1 = DefaultRouter()
 routers_v1.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(routers_v1.urls)),
     path('', include('djoser.urls')),
+    path('', include(routers_v1.urls)),
 ]
