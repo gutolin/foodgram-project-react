@@ -186,11 +186,11 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, id):
+    def subscribe(self, request, pk):
         """Функция обрабатывающая запросы на создание/удаление
         подписки на автора."""
         user = request.user
-        author = get_object_or_404(User, pk=id)
+        author = get_object_or_404(User, pk=pk)
 
         if request.method == 'DELETE':
             if user == author:
@@ -211,7 +211,7 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы не можете подписываться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        follow = Follow.objects.get_or_create(user=user, author=author)
+        follow = Follow.objects.get_or_create(user=user, author__id=author)
         serializer = FollowSerializers(
             follow,
             context={'request': request}
