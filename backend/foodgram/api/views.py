@@ -151,6 +151,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
     pagination_class = None
+    permission_classes = [AllowAny, ]
 
 
 class CreateRetrieveViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
