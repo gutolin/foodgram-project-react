@@ -142,6 +142,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class IngredientAmountViewSet(viewsets.ModelViewSet):
     queryset = IngredientAmount.objects.all()
     serializer_class = IngredientAmountSerializers
+    pagination_class = None
     permission_classes = [AllowAny, ]
 
 
