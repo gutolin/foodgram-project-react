@@ -186,67 +186,36 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk=None):
+    def subscribe(self, request, id):
         """Функция обрабатывающая запросы на создание/удаление
         подписки на автора."""
-        user = self.request.user
-        author = get_object_or_404(self.queryset, id=id)
-        serializer = FollowSerializers(author)
-        if request.method == 'POST':
-            if Follow.objects.filter(
-                    user=request.user,
-                    author=author).exists():
-                return Response(
-                    {'errors': 'Вы уже подписаны на автора'},
-                    status=status.HTTP_400_BAD_REQUEST)
-            if user == author:
-                return Response(
-                    {'errors': 'Вы не можете отписываться от самого себя'},
-                    status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.create(
-                user=user,
-                author=author)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
+        user = request.user
+        author = get_object_or_404(User, pk=id)
+
         if request.method == 'DELETE':
-            in_subscrabed = Follow.objects.filter(
-                user=request.user,
-                author=author).exists()
-            if in_subscrabed is False:
+            if user == author:
                 return Response({
-                    'errors': 'Вы уже отписались'
-                    }, status=status.HTTP_400_BAD_REQUEST)
-        Follow.objects.filter(
-            user=request.user,
-            author=author).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-        # user = request.user
-        # author = get_object_or_404(User, pk=pk)
-# 
-        # if request.method == 'DELETE':
-        #     if user == author:
-        #         return Response({
-        #             'errors': 'Вы не можете отписываться от самого себя'
-        #         }, status=status.HTTP_400_BAD_REQUEST)
-        #     follow = Follow.objects.filter(user=user, author=author)
-        #     if follow.exists():
-        #         follow.delete()
-        #         return Response(status=status.HTTP_204_NO_CONTENT)
-# 
-        #     return Response({
-        #         'errors': 'Вы уже отписались'
-        #     }, status=status.HTTP_400_BAD_REQUEST)
-# 
-        # if user == author:
-        #     return Response({
-        #         'errors': 'Вы не можете подписываться на самого себя'
-        #     }, status=status.HTTP_400_BAD_REQUEST)
-# 
-        # follow = Follow.objects.get_or_create(user=user, author=author)
-        # serializer = FollowSerializers(
-        #     follow, context={'request': request}
-        # )
-        # return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    'errors': 'Вы не можете отписываться от самого себя'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            follow = Follow.objects.filter(user=user, author=author)
+            if follow.exists():
+                follow.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({
+                'errors': 'Вы уже отписались'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if user == author:
+            return Response({
+                'errors': 'Вы не можете подписываться на самого себя'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        follow = Follow.objects.get_or_create(user=user, author=author)
+        serializer = FollowSerializers(
+            follow, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
