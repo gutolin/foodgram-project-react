@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -14,7 +13,7 @@ routers_v1.register(r'recipes', RecipeViewSet, basename='recipes')
 routers_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', include('djoser.urls')),
     path('', include(routers_v1.urls)),
     path('auth/', include('djoser.urls.authtoken')),
 ]
