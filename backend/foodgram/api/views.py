@@ -192,14 +192,6 @@ class CustomUserViewSet(UserViewSet):
         user = request.user
         author = get_object_or_404(User, pk=id)
 
-        queryset = Follow.objects.filter(user=user)
-        pages = self.paginate_queryset(queryset)
-        serializer = FollowSerializers(
-            pages,
-            many=True,
-            context={'request': request}
-        )
-
         if request.method == 'DELETE':
             if user == author:
                 return Response({
