@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from .serializers import (FollowSerializers, IngredientAmountSerializers,
                           IngredientSerializers, RecipeCreateSerializers,
                           RecipeSerializers, RecipeSubscriberSerializers,
-                          TagSerializers, UsersSerializer)
+                          TagSerializers, CustomUserSerializer)
 from api.filters import RecipesFilterSet, IngredientSearchFilter
 from api.permissions import IsAdminAuthorOrReadOnly
 from recipe.models import (Cart, Favorites, Follow, Ingredient,
@@ -180,7 +180,7 @@ class FollowViewSet(CreateRetrieveViewSet):
 
 
 class UserViewSet(UserViewSet):
-    serializer_class = UsersSerializer
+    serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     permission_classes = [AllowAny, ]
 
