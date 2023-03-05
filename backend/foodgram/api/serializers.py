@@ -39,7 +39,7 @@ class IngredientAmountSerializers(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit', 'amount']
 
 
-class CustomUserSerializer(UserSerializer):
+class UsersSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -61,7 +61,7 @@ class CustomUserSerializer(UserSerializer):
 class RecipeSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
     ingredients = SerializerMethodField()
-    author = CustomUserSerializer(read_only=True, many=False)
+    author = UsersSerializer(read_only=True, many=False)
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
@@ -157,7 +157,7 @@ class RecipeSubscriberSerializers(serializers.ModelSerializer):
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
     tags = TagSerializers(read_only=True, many=True)
-    author = CustomUserSerializer(read_only=True)
+    author = UsersSerializer(read_only=True)
     image = Base64ImageField()
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField()

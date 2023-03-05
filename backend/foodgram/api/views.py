@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from .serializers import (FollowSerializers, IngredientAmountSerializers,
                           IngredientSerializers, RecipeCreateSerializers,
                           RecipeSerializers, RecipeSubscriberSerializers,
-                          TagSerializers, CustomUserSerializer)
+                          TagSerializers, UsersSerializer)
 from api.filters import RecipesFilterSet, IngredientSearchFilter
 from api.permissions import IsAdminAuthorOrReadOnly
 from recipe.models import (Cart, Favorites, Follow, Ingredient,
@@ -179,8 +179,8 @@ class FollowViewSet(CreateRetrieveViewSet):
         )
 
 
-class UserViewSet(UserViewSet):
-    serializer_class = CustomUserSerializer
+class CustomUserViewSet(UserViewSet):
+    serializer_class = UsersSerializer
     queryset = User.objects.all()
     permission_classes = [AllowAny, ]
 
@@ -217,8 +217,7 @@ class UserViewSet(UserViewSet):
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['get'],
-            permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'],permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
         queryset = Follow.objects.filter(user=user)
