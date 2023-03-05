@@ -219,10 +219,9 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы не можете подписываться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = Follow.objects.get_or_create(user=user, author=author)
-        pages = self.paginate_queryset(queryset)
+        queryset = Follow.objects.get(user=user, author=author)
         serializer = FollowSerializers(
-            pages,
+            queryset,
             many=True,
             context={'request': request}
         )
