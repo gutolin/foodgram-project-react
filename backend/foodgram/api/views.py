@@ -142,6 +142,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class IngredientAmountViewSet(viewsets.ModelViewSet):
     queryset = IngredientAmount.objects.all()
     serializer_class = IngredientAmountSerializers
+    permission_classes = [AllowAny, ]
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
