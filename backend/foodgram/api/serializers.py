@@ -215,10 +215,10 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
                         'Значение колличества не может быть меньше 0'
                         )
                      })
-            if int(ingredient_item['amount']) < 10000:
+            if str(len(ingredient_item['amount'])) < 4:
                 raise serializers.ValidationError(
                     {'ingredients': (
-                        'Значение колличества не может быть выше 10000'
+                        'Значение колличества не может быть выше 9999'
                         )
                      })
         data['ingredients'] = ingredients
