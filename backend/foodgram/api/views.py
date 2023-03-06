@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
@@ -27,7 +27,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     фильтрация по автору, тегу, в избранном, в корзине
     safe методы доустпны любому пользователю."""
     queryset = Recipe.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
     permission_classes = [IsAdminAuthorOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipesFilterSet
